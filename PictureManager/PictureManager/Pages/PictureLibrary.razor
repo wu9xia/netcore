@@ -1,0 +1,61 @@
+﻿@page "/picture"
+@using System.IO;
+@using PictureManager.Model;
+@inject HttpClient Http
+<link href="css/picture.css" rel="stylesheet" />
+
+<h3 class="title">PictureLibrary</h3>
+
+<div class="topbar">
+    <div class="right">
+        <select>
+            <option value="0" selected="selected">全部</option>
+            <option value="1">按姓名排序</option>
+            <option value="1">按日期排序</option>
+        </select>
+    </div>
+</div>
+<div class="masonry">
+    @if (_pictures != null)
+    {
+        foreach (var pic_path in _pictures)
+        {
+            <div class="item"><img src="@pic_path" style="width: 100%"></div>
+        }
+    }
+</div>
+
+@code {
+
+
+    private List<string> _pictures;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this._pictures = new List<string>();
+        //this._pictures.Add("../testpics/秦风手机壳.png");
+        //this._pictures.Add("../testpics/下载.jpg");
+        var test = await Http.GetFromJsonAsync<ClientPictureModel>("api/Picture/GetPictures");
+
+        this._pictures = test.result;
+        //string basePath = "D:\\private\\pictures";
+        //List<string> pictures = LoadPicture(basePath);
+        //foreach (var path in pictures)
+        //{
+        //    this._pictures.Add(@"https://localhost:44350/PersonalPicture" + path.Substring(path.IndexOf(basePath)));
+        //}
+
+    }
+
+    private List<string> LoadPicture(string basePath)
+    {
+        var pictures = new List<string>();
+        if (Directory.Exists(basePath))
+        {
+            string[] files = Directory.GetFiles(basePath);
+            pictures = files.ToList<string>();
+        }
+
+        return pictures;
+    }
+}
