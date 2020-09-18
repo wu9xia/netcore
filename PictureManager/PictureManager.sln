@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager", "PictureManager\PictureManager.csproj", "{F4754729-ABAC-46A3-8932-F51947BF6A2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureManagerApi", "PictureManagerApi\PictureManagerApi.csproj", "{310E997E-6AF0-4792-924E-AF34EA0A412D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManagerApi", "PictureManagerApi\PictureManagerApi.csproj", "{310E997E-6AF0-4792-924E-AF34EA0A412D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

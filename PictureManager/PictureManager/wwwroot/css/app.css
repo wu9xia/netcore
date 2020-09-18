@@ -181,3 +181,26 @@ app {
         display: block;
     }
 }
+
+.pages {
+    line-height: 40px;
+    text-align: center;
+    font-size: 14px;
+}
+
+    .pages a {
+        border: 1px solid #EEE;
+        padding: 2px 4px 2px 4px;
+        text-decoration: none;
+        color: #808080;
+    }
+
+        .pages a:hover {
+            background-color: #EEE;
+            color: #808080;
+        }
+
+.nowpage {
+    background-color: #EEE;
+    color: #FFFFFF;
+}
