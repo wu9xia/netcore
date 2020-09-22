@@ -1,0 +1,165 @@
+﻿<div class="pages">
+    @*@{
+
+
+            if (Page > 1)
+            {
+                <a onclick="JumpPage(1)" >[&lt;&lt;</a>
+                <a onclick="JumpPage(Page - 1)" >&lt;&lt;</a>
+            }
+            int start = Page - 5;
+            if (start < 1)
+            {
+                start = 1;
+            }
+
+            int end = Page + 5;
+            if (end > Pages)
+            {
+                end = Pages;
+            }
+            for (int i = start; i <= end; i++)
+            {
+                if (i == Page)
+                {
+                    <a class="nowpage" onclick="JumpPage(i)" >@i</a>
+                }
+                else
+                {
+                    <a onclick="JumpPage(i)" >@i</a>
+                }
+
+            }
+            if (Page < Pages)
+            {
+                <a onclick="JumpPage(Page + 1)" >&gt;&gt;</a>
+                <a onclick="JumpPage(Pages)" >&gt;&gt;]</a>
+            }
+            <label>per @PageSize total @Count</label>
+        }*@
+    @{
+
+
+        if (Page > 1)
+        {
+            <a href="@HrefString?page=1">[&lt;&lt;</a>
+            <a href="@HrefString?page=@(Page - 1)">&lt;&lt;</a>
+        }
+        int start = Page - 5;
+        if (start < 1)
+        {
+            start = 1;
+        }
+
+        int end = Page + 5;
+        if (end > Pages)
+        {
+            end = Pages;
+        }
+        for (int i = start; i <= end; i++)
+        {
+            if (i == Page)
+            {
+                <a class="nowpage" href="@HrefString?page=@i">@i</a>
+            }
+            else
+            {
+                <a href="@HrefString?page=@i">@i</a>
+            }
+
+        }
+        if (Page < Pages)
+        {
+            <a href="@HrefString?page=@(Page + 1)">&gt;&gt;</a>
+            <a href="@HrefString?page=@(Pages)">&gt;&gt;]</a>
+        }
+        <label>per @PageSize total @Count</label>
+    }
+</div>
+@code {
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Pages = (Count - 1) / PageSize + 1;
+
+        if (Page > Pages)
+        {
+            Page = Pages;
+        }
+
+        if (Page < 1)
+        {
+            Page = 1;
+        }
+    }
+
+    #region Parameters
+
+    #region Page Parameter
+
+    #region pagesize
+    [Parameter]
+    public int PageSize { get; set; } = 10;
+    [Parameter]
+    public EventCallback<int> PageSizeChanged { get; set; }
+    async Task UpdatePageSizeValue()
+    {
+        await PageSizeChanged.InvokeAsync(PageSize);
+    }
+    #endregion
+
+    #region page
+    [Parameter]
+    public int Page { get; set; } = 1;
+    [Parameter]
+    public EventCallback<int> PageChanged { get; set; }
+    async Task UpdatePageValue()
+    {
+        await PageChanged.InvokeAsync(Page);
+    }
+    #endregion
+
+    #region Count
+    [Parameter]
+    public int Count { get; set; } = 0;
+    [Parameter]
+    public EventCallback<int> CountChanged { get; set; }
+    async Task UpdateCountValue()
+    {
+        await CountChanged.InvokeAsync(Count);
+    }
+    #endregion
+
+    #region Pages
+    [Parameter]
+    public int Pages { get; set; } = 1;
+    [Parameter]
+    public EventCallback<int> PagesChanged { get; set; }
+    async Task UpdatePagesValue()
+    {
+        await PagesChanged.InvokeAsync(Pages);
+    }
+    #endregion
+    #endregion
+
+    #region Href
+    [Parameter]
+    public string HrefString { get; set; } = "#";
+    [Parameter]
+    public EventCallback<string> HrefStringChanged { get; set; }
+    async Task UpdateHrefStringValue()
+    {
+        await HrefStringChanged.InvokeAsync(HrefString);
+    }
+    #endregion
+    #endregion
+
+    #region Method
+    private void JumpPage(int page)
+    {
+        this.Page = page;
+    }
+    #endregion
+
+
+}

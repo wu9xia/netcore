@@ -186,6 +186,8 @@ app {
     line-height: 40px;
     text-align: center;
     font-size: 14px;
+    width:100%;
+    height:100%;
 }
 
     .pages a {
