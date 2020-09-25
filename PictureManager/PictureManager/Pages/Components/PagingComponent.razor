@@ -42,8 +42,8 @@
 
         if (Page > 1)
         {
-            <a href="@HrefString?page=1">[&lt;&lt;</a>
-            <a href="@HrefString?page=@(Page - 1)">&lt;&lt;</a>
+            <a href="@HrefString/1">[&lt;&lt;</a>
+            <a href="@HrefString/@(Page - 1)">&lt;&lt;</a>
         }
         int start = Page - 5;
         if (start < 1)
@@ -60,18 +60,18 @@
         {
             if (i == Page)
             {
-                <a class="nowpage" href="@HrefString?page=@i">@i</a>
+                <a class="nowpage" href="@HrefString/@i">@i</a>
             }
             else
             {
-                <a href="@HrefString?page=@i">@i</a>
+                <a href="@HrefString/@i">@i</a>
             }
 
         }
         if (Page < Pages)
         {
-            <a href="@HrefString?page=@(Page + 1)">&gt;&gt;</a>
-            <a href="@HrefString?page=@(Pages)">&gt;&gt;]</a>
+            <a href="@HrefString/@(Page + 1)">&gt;&gt;</a>
+            <a href="@HrefString/@(Pages)">&gt;&gt;]</a>
         }
         <label>per @PageSize total @Count</label>
     }

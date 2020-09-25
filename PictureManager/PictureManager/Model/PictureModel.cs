@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManagerApi.Models
+namespace PictureManager.Model
 {
     [Serializable]
     [JsonObject(MemberSerialization.OptOut)]

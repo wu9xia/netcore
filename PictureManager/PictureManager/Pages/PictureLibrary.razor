@@ -1,4 +1,5 @@
 ﻿@page "/picture"
+@page "/picture/{temp}"
 @using System.IO;
 @using PictureManager.Model;
 @using PictureManager.Pages.Components;
@@ -41,7 +42,8 @@
     //private int _pages = 0;
     [Parameter]
     public int Page
-    { set
+    {
+        set
         {
             _page = value;
         }
@@ -50,6 +52,8 @@
             return _page;
         }
     }
+    [Parameter]
+    public string temp { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,9 +62,19 @@
         //this._pictures.Add("../testpics/下载.jpg");
         var test = await Http.GetFromJsonAsync<ClientPictureModel>("api/Picture/GetPictures");
 
+        //正在开发中
+        HttpResponseMessage message = await Http.PostAsJsonAsync<PictureModel>("api/Picture/GetPictures"
+            , new PictureModel()
+            {
+                Page = this.Page,
+                PageSize = this._pageSize
+            }) ;
+
         this._pictures = test.result;
         this._count = 100;
 
+        temp = temp ?? "1";
+        Page = Int32.Parse(temp);
 
         //string basePath = "D:\\private\\pictures";
         //List<string> pictures = LoadPicture(basePath);
@@ -73,10 +87,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (!string.IsNullOrEmpty(navigationManager.QueryString("page")))
-        {
-            this.Page = int.Parse(navigationManager.QueryString("page"));
-        }
+        temp = temp ?? "1";
+        Page = Int32.Parse(temp);
     }
 
 }

@@ -1,4 +1,5 @@
 ﻿@page "/"
+@page "/{temp}"
 @using PictureManager.Pages.Components;
 @using Common.Utility;
 @inject NavigationManager navigationManager
@@ -8,11 +9,13 @@
 Welcome to your world.
 
 <SurveyPrompt Title="This is my picture library, please feel free to visit" />
-<PagingComponent Page="@_page" PageSize="@_pageSize" Count="@_count" HrefString="#" />
+<PagingComponent Page="@PPage.Value" PageSize="@_pageSize" Count="@_count" HrefString="" />
 
 @code{
     [Parameter]
-    public int _page { get; set; } = 1;
+    public int? PPage { get; set; } = 1;
+    [Parameter]
+    public string temp { get; set; }
     private int _pageSize = 10;
     private int _count = 0;
     //private int _pages = 0;
@@ -20,17 +23,18 @@ Welcome to your world.
     protected override async Task OnInitializedAsync()
     {
         this._count = 100;
-        if (!string.IsNullOrEmpty(navigationManager.QueryString("page")))
-        {
-            this._page = int.Parse(navigationManager.QueryString("page"));
-        }
+        temp = temp ?? "1";
+        PPage = Int32.Parse(temp);
+        //if (!string.IsNullOrEmpty(navigationManager.QueryString("page")))
+        //{
+        //    this.Page = int.Parse(navigationManager.QueryString("page"));
+        //}
     }
 
-    private async Task Test()
+    protected override async Task OnParametersSetAsync()
     {
-        if (!string.IsNullOrEmpty(navigationManager.QueryString("page")))
-        {
-            this._page = int.Parse(navigationManager.QueryString("page"));
-        }
+        temp = temp ?? "1";
+        PPage = Int32.Parse(temp);
     }
+
 }

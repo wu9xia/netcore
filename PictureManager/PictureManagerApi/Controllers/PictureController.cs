@@ -64,5 +64,66 @@ namespace PictureManagerApi.Controllers
             }
             return new { success = false };
         }
+
+        [HttpPost("/api/[controller]/GetPictures")]
+        public dynamic GetPictures([FromBody] PictureModel model)
+        {
+            try
+            {
+                List<string> files = new List<string>();
+                Models.PictureModel dics = ConfigurationManager.GetSection<Models.PictureModel>("Picture");
+
+
+                if (dics != null && dics.PictureDics.Count > 0)
+                {
+                    List<PictureDic> dicsRec = dics.PictureDics;
+                    foreach (PictureDic dic in dicsRec)
+                    {
+                        if (Directory.Exists(dic.Path))
+                        {
+                            //Sort Files
+                            DirectoryInfo di = new DirectoryInfo(dic.Path);
+
+                            FileInfo[] arrFi = di.GetFiles("*.*");
+                            SortAsFileName(ref arrFi);
+
+                            
+                            List<string> pictures = Directory.GetFiles(dic.Path).ToList();
+                            arrFi.Skip(model.Page * model.PageSize).Take(model.PageSize).ToList().ForEach(pic =>
+                            {
+                                files.Add("https://" + Current.Request.Host.Value + "/" + dic.Path.Split('\\')[dic.Path.Split('\\').Length - 1] + "/" + pic.Name);
+                            });
+                            //List<string> pictures = Directory.GetFiles(dic.Path).ToList();
+                            //pictures.ForEach(pic =>
+                            //{
+                            //    files.Add("https://" + Current.Request.Host.Value + "/" + dic.Path.Split('\\')[dic.Path.Split('\\').Length - 1] + "/" + Path.GetFileName(pic));
+                            //});
+                        }
+
+                    }
+
+                }
+
+                return new { success = true, result = files };
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return new { success = false };
+        }
+
+        #region private method
+        /// <summary>
+        　　/// C#按文件名排序（顺序）
+        　　/// </summary>
+        　　/// <param name="arrFi">待排序数组</param>
+        private void SortAsFileName(ref FileInfo[] arrFi)
+        {
+            Array.Sort(arrFi, delegate (FileInfo x, FileInfo y) { return x.Name.CompareTo(y.Name); });
+        }
+
+
+        #endregion
     }
 }
