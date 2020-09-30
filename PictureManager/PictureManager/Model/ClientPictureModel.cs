@@ -14,5 +14,8 @@ namespace PictureManager.Model
         public bool success { get; set; }
         [JsonProperty(PropertyName = "result", DefaultValueHandling = DefaultValueHandling.Include, NullValueHandling = NullValueHandling.Include)]
         public List<string> result { get; set; }
+
+        [JsonProperty(PropertyName = "count", DefaultValueHandling = DefaultValueHandling.Include, NullValueHandling = NullValueHandling.Include)]
+        public int Count { get; set; }
     }
 }

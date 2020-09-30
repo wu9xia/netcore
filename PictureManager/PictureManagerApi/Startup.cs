@@ -16,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PictureManagerApi.Framework.Utility;
 using PictureManagerApi.Middleware;
+using Newtonsoft.Json;
 
 namespace PictureManagerApi
 {
@@ -36,8 +37,10 @@ namespace PictureManagerApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc().AddWebApiConventions();
             services.AddControllers();
-
+            
+            services.AddControllersWithViews();
             //services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
             services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
         }
@@ -70,7 +73,7 @@ namespace PictureManagerApi
             //List<string> pictures = LoadPicture(basePath);
 
             app.UseRouting();
-
+           
             app.UseAuthorization();
 
             app.UseCors(config =>

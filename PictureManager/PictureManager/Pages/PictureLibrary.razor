@@ -3,7 +3,9 @@
 @using System.IO;
 @using PictureManager.Model;
 @using PictureManager.Pages.Components;
+@using System.Text;
 @using Common.Utility;
+@using Newtonsoft.Json;
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 <link href="css/picture.css" rel="stylesheet" />
@@ -53,28 +55,19 @@
         }
     }
     [Parameter]
-    public string temp { get; set; }
+    public string temp { get; set; } = "1";
+
+    private bool isFirstLoad = true;
 
     protected override async Task OnInitializedAsync()
     {
-        this._pictures = new List<string>();
+        //this._pictures = new List<string>();
         //this._pictures.Add("../testpics/秦风手机壳.png");
         //this._pictures.Add("../testpics/下载.jpg");
-        var test = await Http.GetFromJsonAsync<ClientPictureModel>("api/Picture/GetPictures");
+        //var test = await Http.GetFromJsonAsync<ClientPictureModel>("api/Picture/GetPictures");
 
-        //正在开发中
-        HttpResponseMessage message = await Http.PostAsJsonAsync<PictureModel>("api/Picture/GetPictures"
-            , new PictureModel()
-            {
-                Page = this.Page,
-                PageSize = this._pageSize
-            }) ;
-
-        this._pictures = test.result;
-        this._count = 100;
-
-        temp = temp ?? "1";
-        Page = Int32.Parse(temp);
+        isFirstLoad = false;
+        await LoadPictures();
 
         //string basePath = "D:\\private\\pictures";
         //List<string> pictures = LoadPicture(basePath);
@@ -87,8 +80,46 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        if (!string.IsNullOrEmpty(temp))
+        {
+            Page = int.Parse(temp);
+        }
+        if(!isFirstLoad)
+            await LoadPictures();
+    }
+
+    /// <summary>
+    /// 是否渲染组件
+    /// </summary>
+    /// <returns></returns>
+    protected override bool ShouldRender()
+    {
+        Console.WriteLine("ShouldRender");
+        return true;
+    }
+
+    private async Task LoadPictures()
+    {
+        //正在开发中
+        HttpResponseMessage message = await Http.PostAsJsonAsync<PictureModel>("api/Picture/GetPictures"
+            , new PictureModel()
+            {
+                Page = this.Page,
+                PageSize = this._pageSize
+            });
+        var a = message.Content;
+        byte[] b = await a.ReadAsByteArrayAsync();
+        string c = Encoding.UTF8.GetString(b);
+        ClientPictureModel ctest = JsonConvert.DeserializeObject<ClientPictureModel>(c);
+        if (ctest != null)
+        {
+            this._pictures = ctest.result;
+        }
+        //this._pictures = test.result;
+        Console.WriteLine(this.Page + "-----" + this._pictures.FirstOrDefault());
+        this._count = this._pictures.Count;
+
         temp = temp ?? "1";
         Page = Int32.Parse(temp);
     }
-
 }

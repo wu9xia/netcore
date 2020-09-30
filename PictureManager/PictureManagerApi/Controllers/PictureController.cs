@@ -73,7 +73,7 @@ namespace PictureManagerApi.Controllers
                 List<string> files = new List<string>();
                 Models.PictureModel dics = ConfigurationManager.GetSection<Models.PictureModel>("Picture");
 
-
+                FileInfo[] arrFi = null;
                 if (dics != null && dics.PictureDics.Count > 0)
                 {
                     List<PictureDic> dicsRec = dics.PictureDics;
@@ -84,12 +84,12 @@ namespace PictureManagerApi.Controllers
                             //Sort Files
                             DirectoryInfo di = new DirectoryInfo(dic.Path);
 
-                            FileInfo[] arrFi = di.GetFiles("*.*");
+                            arrFi = di.GetFiles("*.*");
                             SortAsFileName(ref arrFi);
 
                             
                             List<string> pictures = Directory.GetFiles(dic.Path).ToList();
-                            arrFi.Skip(model.Page * model.PageSize).Take(model.PageSize).ToList().ForEach(pic =>
+                            arrFi.Skip((model.Page - 1) * model.PageSize).Take(model.PageSize).ToList().ForEach(pic =>
                             {
                                 files.Add("https://" + Current.Request.Host.Value + "/" + dic.Path.Split('\\')[dic.Path.Split('\\').Length - 1] + "/" + pic.Name);
                             });
@@ -103,8 +103,9 @@ namespace PictureManagerApi.Controllers
                     }
 
                 }
-
-                return new { success = true, result = files };
+                int FileCount = 0;
+                if (arrFi != null) FileCount = arrFi.Length;
+                return new { success = true, result = files, count = FileCount };
             }
             catch (Exception ex)
             {
