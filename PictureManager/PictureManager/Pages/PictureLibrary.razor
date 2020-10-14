@@ -6,6 +6,8 @@
 @using System.Text;
 @using Common.Utility;
 @using Newtonsoft.Json;
+@using Common.Utility;
+@using Microsoft.AspNetCore.WebUtilities;
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 <link href="css/picture.css" rel="stylesheet" />
@@ -24,20 +26,55 @@
 <div class="masonry">
     @if (_pictures != null)
     {
-        foreach (var pic_path in _pictures)
+        foreach (var key in _pictures.Keys)
         {
-            <div class="item"><img src="@pic_path" style="width: 100%"></div>
+            //是否是文件夹
+            if (key.Equals("folder"))
+            {
+                foreach (var pic_path in _pictures["folder"])
+                {
+                    <div class="item"><a href="picture/1?module=@(pic_path.Substring(pic_path.LastIndexOf("//") + 2))" style="width:50px;">@(pic_path.Substring(pic_path.LastIndexOf("//") + 2))</a></div>
+                }
+            }
+            //是否是图片
+            else if (key.Equals("files"))
+            {
+                @*foreach (var pic_path in _pictures["files"])
+                    {
+                        //if (FileExtension.IsImage(pic_path))
+                        //{
+                        <div class="item"><img src="@(pic_path)" style="width: 100%" /></div>
+                        //}
+                    }*@
+                foreach (var pic_path in _pictures["files"])
+                {
+                    if (pic_path.EndsWith(".jpg") || pic_path.EndsWith(".png") || pic_path.EndsWith(".ico"))
+                    {
+                        <div class="item"><img src="@(pic_path)" style="width: 100%" /></div>
+                    }
+                }
+            }
+
+
+
         }
+        @*foreach (var pic_path in _pictures["files"])
+            {
+                if (FileExtension.IsImage(pic_path))
+                {
+                    <div class="item"><img src="@pic_path" style="width: 100%" /></div>
+                }
+            }*@
     }
+    
 </div>
-@*<PagingComponent Page="1" PageSize="10" Count="10" Pages="10"/>*@
-<PagingComponent @bind-Page="@_page" PageSize="@_pageSize" Count="@_count" HrefString="/picture" />
+<PagingComponent @bind-Page="@_page" PageSize="@_pageSize" Count="@_count" HrefString="/picture" Module="@module" />
 
 
 @code {
 
 
-    private List<string> _pictures;
+    private Dictionary<string, List<string>> _pictures;
     private int _page = 1;
     private int _pageSize = 8;
     private int _count = 0;
@@ -57,7 +94,9 @@
     [Parameter]
     public string temp { get; set; } = "1";
 
-    private bool isFirstLoad = true;
+    private string module = "default";
+
+    private bool isFirstLoad = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,8 +105,9 @@
         //this._pictures.Add("../testpics/下载.jpg");
         //var test = await Http.GetFromJsonAsync<ClientPictureModel>("api/Picture/GetPictures");
 
-        isFirstLoad = false;
         await LoadPictures();
+
+        isFirstLoad = true;
 
         //string basePath = "D:\\private\\pictures";
         //List<string> pictures = LoadPicture(basePath);
@@ -80,12 +120,17 @@
 
     protected override async Task OnParametersSetAsync()
     {
+
         if (!string.IsNullOrEmpty(temp))
         {
             Page = int.Parse(temp);
         }
-        if(!isFirstLoad)
+
+
+        if (!isFirstLoad)
             await LoadPictures();
+        else
+            isFirstLoad = false;
     }
 
     /// <summary>
@@ -100,13 +145,21 @@
 
     private async Task LoadPictures()
     {
+        //接收参数Module
+        var query = new Uri(navigationManager.Uri).Query;
+        if (QueryHelpers.ParseQuery(query).TryGetValue("module", out Microsoft.Extensions.Primitives.StringValues value))
+        {
+            module = value.ToString();
+        }
+
         //正在开发中
-        HttpResponseMessage message = await Http.PostAsJsonAsync<PictureModel>("api/Picture/GetPictures"
-            , new PictureModel()
-            {
-                Page = this.Page,
-                PageSize = this._pageSize
-            });
+        HttpResponseMessage message = await Http.PostAsJsonAsync<PictureModel>("api/Picture/GetLoopPictures"
+        , new PictureModel()
+        {
+            Page = this.Page,
+            PageSize = this._pageSize,
+            Module = this.module
+        });
         var a = message.Content;
         byte[] b = await a.ReadAsByteArrayAsync();
         string c = Encoding.UTF8.GetString(b);
@@ -116,8 +169,8 @@
             this._pictures = ctest.result;
         }
         //this._pictures = test.result;
-        Console.WriteLine(this.Page + "-----" + this._pictures.FirstOrDefault());
-        this._count = this._pictures.Count;
+        //Console.WriteLine(this.Page + "-----" + this._pictures.FirstOrDefault());
+        this._count = ctest.Count;
 
         temp = temp ?? "1";
         Page = Int32.Parse(temp);

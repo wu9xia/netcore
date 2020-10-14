@@ -13,7 +13,7 @@ namespace PictureManager.Model
         [JsonProperty(PropertyName = "success", DefaultValueHandling = DefaultValueHandling.Include, NullValueHandling = NullValueHandling.Include)]
         public bool success { get; set; }
         [JsonProperty(PropertyName = "result", DefaultValueHandling = DefaultValueHandling.Include, NullValueHandling = NullValueHandling.Include)]
-        public List<string> result { get; set; }
+        public Dictionary<string, List<string>> result { get; set; }
 
         [JsonProperty(PropertyName = "count", DefaultValueHandling = DefaultValueHandling.Include, NullValueHandling = NullValueHandling.Include)]
         public int Count { get; set; }
