@@ -33,7 +33,12 @@
             {
                 foreach (var pic_path in _pictures["folder"])
                 {
-                    <div class="item"><a href="picture/1?module=@(pic_path.Substring(pic_path.LastIndexOf("//") + 2))" style="width:50px;">@(pic_path.Substring(pic_path.LastIndexOf("//") + 2))</a></div>
+                    <div>
+                        <a href="picture/1?module=@(pic_path.Substring(pic_path.LastIndexOf("//") + 2))" style="width:50px;">
+                            <img src="/image/folder-open.png" style="width:64px;height:64px;"/>
+                            @(pic_path.Substring(pic_path.LastIndexOf("//") + 2))
+                        </a>
+                    </div>
                 }
             }
             //是否是图片
@@ -66,7 +71,7 @@
                 }
             }*@
     }
-    
+
 </div>
 <PagingComponent @bind-Page="@_page" PageSize="@_pageSize" Count="@_count" HrefString="/picture" Module="@module" />
 
